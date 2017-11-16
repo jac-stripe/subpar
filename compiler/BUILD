@@ -16,7 +16,7 @@ py_library(
         "//:__init__.py",
     ],
     data = [
-        "//runtime:support",
+        "@//runtime:support",
     ],
     srcs_version = "PY2AND3",
 )
