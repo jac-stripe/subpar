@@ -31,6 +31,9 @@ def _parfile_impl(ctx):
     # Find the list of things that must be built before this thing is built
     # TODO: also handle ctx.attr.src.data_runfiles.symlinks
     inputs = list(ctx.attr.src.default_runfiles.files)
+    symlinks = list(ctx.attr.src.data_runfiles.symlinks)
+    for symlink in symlinks:
+        print(symlink)
 
     # Make a manifest of files to store in the .par file.  The
     # runfiles manifest is not quite right, so we make our own.
