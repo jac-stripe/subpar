@@ -103,6 +103,8 @@ class PythonArchive(object):
 
         # Validate manifest and add various extra files to the list
         stored_resources = self.scan_manifest(manifest)
+        print('stored resources')
+        print(stored_resources)
 
         # Create parfile in temporary file
         temp_parfile = self.create_temp_parfile()
