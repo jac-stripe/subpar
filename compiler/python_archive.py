@@ -100,6 +100,7 @@ class PythonArchive(object):
         # Assemble list of files to include
         print('Compiling file list from [%s]', self.manifest_filename)
         manifest = manifest_parser.parse(self.manifest_filename)
+        print('manifest')
 
         # Validate manifest and add various extra files to the list
         stored_resources = self.scan_manifest(manifest)

@@ -46,7 +46,9 @@ def parse(manifest_filename):
     manifest = {}
     with io.open(manifest_filename, 'rt', encoding='utf8') as f:
         lineno = 0
+        print('parsing manifest')
         for line in f:
+            print(line)
             # Split line into fields
             lineno += 1
             line = line.rstrip('\n')
