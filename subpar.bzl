@@ -41,7 +41,9 @@ def _parfile_impl(ctx):
         local_path = ''
         sources_map[stored_path] = local_path
     # Now add the regular (source and generated) files
+    print('PRINTING INPUT FILES')
     for input_file in inputs:
+        print(input_file)
         stored_path = _prepend_workspace(input_file.short_path, ctx)
         local_path = input_file.path
         sources_map[stored_path] = local_path
