@@ -93,12 +93,12 @@ class PythonArchive(object):
         Raises:
             Error, IOError, SystemError
         """
-        logging.info('Compiling under python %s...', sys.version)
-        logging.info('Making parfile [%s]...', self.output_filename)
+        print('Compiling under python %s...', sys.version)
+        print('Making parfile [%s]...', self.output_filename)
         remove_if_present(self.output_filename)
 
         # Assemble list of files to include
-        logging.debug('Compiling file list from [%s]', self.manifest_filename)
+        print('Compiling file list from [%s]', self.manifest_filename)
         manifest = manifest_parser.parse(self.manifest_filename)
 
         # Validate manifest and add various extra files to the list
@@ -107,7 +107,7 @@ class PythonArchive(object):
         # Create parfile in temporary file
         temp_parfile = self.create_temp_parfile()
         try:
-            logging.debug('Writing parfile to temp file [%s]...',
+            print('Writing parfile to temp file [%s]...',
                           temp_parfile.name)
             self.write_bootstrap(temp_parfile)
             self.write_zip_data(temp_parfile, stored_resources)
@@ -116,7 +116,7 @@ class PythonArchive(object):
             self.create_final_from_temp(temp_parfile.name)
         finally:
             remove_if_present(temp_parfile.name)
-        logging.info('Success!')
+        print('Success!')
 
     def create_temp_parfile(self):
         """Create the first part of a parfile.
