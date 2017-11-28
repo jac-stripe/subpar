@@ -54,6 +54,7 @@ so use something else.  For example:
 
 import os
 import pkgutil
+import shutil
 import sys
 import tempfile
 import warnings
@@ -225,11 +226,23 @@ def setup(import_roots=None):
 
         module_name_to_files = {}
         modules_with_shared_objs = set()
+
+        # Some packages (e.g. xgboost) include data files that
+        # must be extracted to various dirs
+        # (see https://www.python.org/dev/peps/pep-0491/#installing-a-wheel-distribution-1-0-py32-none-any-whl)
+        # Currently, we check if purelib is in the data dir
+        # and extract that to the tmp dir as well.
+        # TODO support the other data dirs (platlib, etc...)
+        module_name_to_purelib_files = {}
+        modules_that_override_purelib = set()
+
         for filename in filepaths:
             module_name = filename[:filename.find('/')]
             files = module_name_to_files.get(module_name, [])
             files.append(filename)
             module_name_to_files[module_name] = files
+            if module_name not in modules_that_override_purelib and '.data/purelib' in filename:
+                modules_that_override_purelib.add(module_name)
             if module_name not in modules_with_shared_objs and filename.endswith('.so'):
                 modules_with_shared_objs.add(module_name)
 
@@ -240,6 +253,17 @@ def setup(import_roots=None):
             if import_root in modules_with_shared_objs:
                 for f in module_name_to_files[import_root]:
                     archive.extract(f, tmp_dir)
+
+                # if the module overrides purelib, mv that to the root
+                if import_root in modules_that_override_purelib:
+                    import_root_extracted_path = os.path.join(tmp_dir, import_root)
+                    extracted_files = os.listdir(import_root_extracted_path)
+                    # find the .data dir
+                    data_dir = next(d for d in extracted_files if '.data' in d)
+                    purelib_path = os.path.join(import_root_extracted_path, data_dir, 'purelib')
+                    purelib_files = os.listdir(purelib_path)
+                    for f in purelib_files:
+                        shutil.move(os.path.join(purelib_path, f), os.path.join(import_root_extracted_path, f))
                 new_path = os.path.join(tmp_dir, import_root)
                 _log('# extracted so files for %s to %s and adding the tmp dir to sys.path' % (import_root, tmp_dir))
                 sys.path.insert(1, new_path)
