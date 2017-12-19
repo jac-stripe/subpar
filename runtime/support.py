@@ -54,6 +54,7 @@ so use something else.  For example:
 
 import os
 import pkgutil
+import shutil
 import sys
 import warnings
 import zipimport
@@ -251,6 +252,20 @@ def setup(import_roots=None):
         new_path = os.path.join(archive_path, import_root)
         _log('# adding %s to sys.path' % new_path)
         sys.path.insert(1, new_path)
+
+        # if not running out of a zip
+        if os.path.isdir(new_path):
+            # list all files in the path
+            files_in_import = os.listdir(new_path)
+
+            # figure out if theres a .data/purelib dir
+            for d in files_in_import:
+                if d.endswith('.data') and os.path.isdir(os.path.join(new_path, d, 'purelib')):
+                    # copy all those files to the root
+                    files_to_move = [f for f in os.listdir(os.path.join(new_path, d, 'purelib')) if f != '__init__.py']
+                    for f in files_to_move:
+                        filepath = os.path.join(new_path, d, 'purelib', f)
+                        shutil.move(filepath, new_path)
 
     # Add hook for package metadata
     _setup_pkg_resources('pkg_resources')
