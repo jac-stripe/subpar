@@ -174,7 +174,7 @@ class PythonArchive(object):
         # Insert boilerplate (might be beginning, middle or end)
         output_lines[idx:idx] = [boilerplate_contents]
         contents = ''.join(output_lines).encode('latin-1')
-        return stored_resource.StoredContent('__main__.py', contents)
+        return stored_resource.StoredContent('entry.py', contents)
 
     def scan_manifest(self, manifest):
         """Return a dict of StoredResources based on an input manifest.
